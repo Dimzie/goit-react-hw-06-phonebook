@@ -1,53 +1,26 @@
 import Phonebook from 'components/Phonebook/Phonebook';
-import { nanoid } from 'nanoid';
 import ContactsList from './ContactsList/ContactsList';
-import React, { useState } from 'react';
-import { useLocalStorage } from 'hooks/useLocalStorage';
+import { useSelector, useDispatch } from 'react-redux';
+import { filterInput } from 'redux/filterSlice';
+import { getfilteredContacts } from 'redux/selectors';
 
 export function App() {
-  const [contacts, setContacts] = useLocalStorage('contacts', []);
-  const [filter, setFilter] = useState('');
-
-  const onAddContact = data => {
-    if (contacts.find(contact => contact.number === data.number)) {
-      alert(`Номер "${data.number}" уже есть в книге контактов!`);
-    } else {
-      const addContact = { ...data, id: nanoid(7) };
-      setContacts([...contacts, addContact]);
-    }
+  const filteredContacts = useSelector(getfilteredContacts);
+  const dispatch = useDispatch();
+  const filterChange = e => {
+    dispatch(filterInput(e.target.value));
   };
-
-  const onDeleteContact = id => {
-    setContacts(contacts.filter(contact => contact.id !== id));
-  };
-
-  const filteredContacts = () => {
-    const lowerFilter = filter.toLowerCase();
-    return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(lowerFilter)
-    );
-  };
-
-  const visibleContacts = filteredContacts();
 
   return (
     <>
-      <Phonebook onAddContact={onAddContact} contacts={contacts} />
-      {contacts.length === 0 ? (
+      <Phonebook filteredContacts={filteredContacts} />
+      {filteredContacts.length === 0 ? (
         <p>Your contact book is empty!</p>
       ) : (
         <>
           <h2>Search for contact:</h2>
-          <input
-            onChange={e => setFilter(e.target.value)}
-            type="text"
-            value={filter}
-            name="filter"
-          />
-          <ContactsList
-            visibleContacts={visibleContacts}
-            onDeleteContact={onDeleteContact}
-          />
+          <input onChange={filterChange} type="text" name="filter" />
+          <ContactsList filteredContacts={filteredContacts} />
         </>
       )}
     </>

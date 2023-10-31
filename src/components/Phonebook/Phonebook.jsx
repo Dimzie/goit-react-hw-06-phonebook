@@ -1,26 +1,18 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { addContact } from 'redux/contactsSlice';
 
-function Phonebook({ onAddContact }) {
-  const [formData, setFormData] = useState({
-    name: '',
-    number: '',
-  });
+function Phonebook({ onAddContact, filteredContacts }) {
+  const dispatch = useDispatch();
+  const handleSubmit = e => {
+    const getName = e.target.elements.name.value;
+    const getNumber = e.target.elements.number.value;
 
-  const onInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onAddContact(formData);
-    setFormData({
-      name: '',
-      number: '',
-    });
+    if (filteredContacts.find(contact => contact.number === getNumber)) {
+      alert(`Номер "${getNumber}" уже есть в книге контактов!`);
+    } else {
+      dispatch(addContact(getName, getNumber));
+    }
   };
 
   return (
@@ -28,21 +20,9 @@ function Phonebook({ onAddContact }) {
       <h1>Phonebook</h1>
       <form onSubmit={handleSubmit}>
         <p>Name</p>
-        <input
-          value={formData.name}
-          onChange={onInputChange}
-          type="text"
-          name="name"
-          required
-        />
+        <input type="text" name="name" required />
         <p>Number</p>
-        <input
-          onChange={onInputChange}
-          value={formData.number}
-          type="tel"
-          name="number"
-          required
-        />
+        <input type="tel" name="number" required />
         <button type="submit">Add contact</button>
       </form>
     </>

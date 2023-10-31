@@ -1,12 +1,12 @@
 import React from 'react';
 import Contact from 'components/Contact/Contact';
 
-function ContactsList({ visibleContacts, onDeleteContact }) {
+function ContactsList({ onDeleteContact, filteredContacts }) {
   return (
     <div>
       <h2>Your contacts:</h2>
       <ul>
-        {visibleContacts.map(contact => (
+        {filteredContacts.map(contact => (
           <Contact
             key={contact.id}
             onDeleteContact={onDeleteContact}
